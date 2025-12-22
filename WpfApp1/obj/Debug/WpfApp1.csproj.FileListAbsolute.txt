@@ -13,3 +13,4 @@ C:\Users\Marie\source\repos\WpfApp1\obj\Debug\WpfApp1.csproj.CoreCompileInputs.c
 C:\Users\Marie\source\repos\WpfApp1\obj\Debug\WpfApp1.exe
 C:\Users\Marie\source\repos\WpfApp1\obj\Debug\WpfApp1.pdb
 C:\Users\Marie\source\repos\WpfApp1\obj\Debug\WpfApp1.exe.config
+C:\Users\Marie\source\repos\WpfApp1\obj\Debug\WpfApp1_MarkupCompile.lref
