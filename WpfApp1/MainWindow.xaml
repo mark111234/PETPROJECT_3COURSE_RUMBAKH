@@ -1,41 +1,62 @@
 ﻿<Window x:Class="WpfApp1.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MySQL Demo" Height="500" Width="900">
+        Title="MySQL WPF App" Height="450" Width="800">
     <Grid>
-        <StackPanel Margin="20">
-            <TextBlock Text="Управление MySQL базой данных" FontSize="16" FontWeight="Bold" Margin="0,0,0,20"/>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="20">
 
-            <Button x:Name="btnTestConnection" Content="Тест подключения к MySQL" Click="btnTestConnection_Click" Height="30" Margin="0,0,0,10"/>
-            <Button x:Name="btnCreateDB" Content="Создать базу данных и таблицу" Click="btnCreateDB_Click" Height="30" Margin="0,0,0,10"/>
-            <Button x:Name="btnShowUsers" Content="Показать всех пользователей" Click="btnShowUsers_Click" Height="30" Margin="0,0,0,20"/>
+                <!-- Тест подключения и создание БД -->
+                <GroupBox Header="Управление базой данных" Margin="0,0,0,10">
+                    <StackPanel Margin="5">
+                        <Button Content="Тест подключения" Click="TestConnection_Click" Margin="5"/>
+                        <Button Content="Создать БД" Click="CreateDB_Click" Margin="5"/>
+                    </StackPanel>
+                </GroupBox>
 
-            <TextBlock Text="Добавить нового пользователя:" FontWeight="Bold" Margin="0,0,0,10"/>
+                <!-- Добавление пользователя -->
+                <GroupBox Header="Добавить пользователя" Margin="0,0,0,10">
+                    <StackPanel Margin="5">
+                        <TextBox x:Name="txtName" Margin="5" Text="" ToolTip="Имя"/>
+                        <TextBox x:Name="txtEmail" Margin="5" Text="" ToolTip="Email"/>
+                        <TextBox x:Name="txtAge" Margin="5" Text="" ToolTip="Возраст"/>
+                        <Button Content="Добавить пользователя" Click="AddUser_Click" Margin="5"/>
+                    </StackPanel>
+                </GroupBox>
 
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                <TextBlock Text="Имя:" Width="50"/>
-                <TextBox x:Name="txtName" Width="150" Margin="5,0,0,0"/>
+                <!-- Поиск пользователя -->
+                <GroupBox Header="Поиск пользователя" Margin="0,0,0,10">
+                    <StackPanel Margin="5">
+                        <TextBox x:Name="txtSearchEmail" Margin="5" Text="" ToolTip="Email для поиска"/>
+                        <Button Content="Поиск" Click="SearchUser_Click" Margin="5"/>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Список пользователей -->
+                <GroupBox Header="Все пользователи">
+                    <StackPanel Margin="5">
+                        <Button Content="Показать всех пользователей" Click="ShowUsers_Click" Margin="5"/>
+                        <ListBox x:Name="usersListBox" Height="150" Margin="5">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="5">
+                                        <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding Email}"/>
+                                        <TextBlock>
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="Возраст: {0} лет">
+                                                    <Binding Path="Age"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </StackPanel>
+                </GroupBox>
+
             </StackPanel>
-
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                <TextBlock Text="Email:" Width="50"/>
-                <TextBox x:Name="txtEmail" Width="150" Margin="5,0,0,0"/>
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
-                <TextBlock Text="Возраст:" Width="50"/>
-                <TextBox x:Name="txtAge" Width="50" Margin="5,0,0,0"/>
-            </StackPanel>
-
-            <Button x:Name="btnAddNewUser" Content="Добавить пользователя" Click="btnAddNewUser_Click" Height="30" Margin="0,0,0,10"/>
-
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
-                <TextBlock Text="Поиск по email:" Width="100" VerticalAlignment="Center"/>
-                <TextBox x:Name="txtSearchEmail" Width="150" Margin="5,0,0,0"/>
-                <Button x:Name="btnSearch" Content="Найти" Click="btnSearch_Click" Margin="10,0,0,0" Width="60"/>
-            </StackPanel>
-
-            <TextBlock x:Name="txtStatus" Margin="0,10,0,0" Foreground="Green" TextWrapping="Wrap"/>
-        </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Window>

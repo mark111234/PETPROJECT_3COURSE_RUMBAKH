@@ -1,4 +1,8 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
+using MySql.Data.MySqlClient;
+using System.Collections.Generic;
+using System;
 
 namespace WpfApp1
 {
@@ -9,67 +13,114 @@ namespace WpfApp1
         public MainWindow()
         {
             InitializeComponent();
-            dbHelper = new DatabaseHelper();
+
+            // Укажите свои параметры подключения к БД
+            string server = "localhost";
+            string database = "mydatabase";
+            string username = "root";
+            string password = "yourpassword";
+
+            dbHelper = new DatabaseHelper(server, database, username, password);
         }
 
-        private void btnTestConnection_Click(object sender, RoutedEventArgs e)
+        // Обработчик для кнопки "Тест подключения"
+        private void TestConnection_Click(object sender, RoutedEventArgs e)
         {
-            if (dbHelper.TestConnection())
+            try
             {
-                txtStatus.Text = "Подключение к MySQL серверу успешно!";
+                using (var connection = new MySqlConnection(dbHelper.GetConnectionString()))
+                {
+                    connection.Open();
+                    MessageBox.Show("Подключение к MySQL успешно!");
+                }
             }
-            else
+            catch (MySqlException ex)
             {
-                txtStatus.Text = "Не удалось подключиться к MySQL серверу";
+                MessageBox.Show($"Ошибка подключения: {ex.Message}");
             }
         }
 
-        private void btnCreateDB_Click(object sender, RoutedEventArgs e)
+        // Обработчик для кнопки "Создать БД"
+        private void CreateDB_Click(object sender, RoutedEventArgs e)
         {
-            dbHelper.InitializeDatabase();
-            txtStatus.Text = "База данных и таблица созданы (если не существовали)";
+            try
+            {
+                dbHelper.InitializeDatabase();
+                MessageBox.Show("База данных инициализирована");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при создании БД: {ex.Message}");
+            }
         }
 
-        private void btnAddNewUser_Click(object sender, RoutedEventArgs e)
+        // Обработчик для кнопки "Добавить пользователя"
+        private void AddUser_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtName.Text) ||
                 string.IsNullOrWhiteSpace(txtEmail.Text) ||
                 string.IsNullOrWhiteSpace(txtAge.Text))
             {
-                txtStatus.Text = "Заполните все поля!";
+                MessageBox.Show("Заполните все поля");
                 return;
             }
 
             if (!int.TryParse(txtAge.Text, out int age))
             {
-                txtStatus.Text = "Введите корректный возраст!";
+                MessageBox.Show("Введите корректный возраст");
                 return;
             }
 
-            dbHelper.AddUser(txtName.Text, txtEmail.Text, age);
+            bool success = dbHelper.AddUser(txtName.Text, txtEmail.Text, age);
 
-            // Очистка полей
-            txtName.Text = "";
-            txtEmail.Text = "";
-            txtAge.Text = "";
-        }
-
-        private void btnShowUsers_Click(object sender, RoutedEventArgs e)
-        {
-            dbHelper.GetAllUsers();
-            txtStatus.Text = "Данные пользователей выведены в консоль (View → Output)";
-        }
-
-        private void btnSearch_Click(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(txtSearchEmail.Text))
+            if (success)
             {
-                txtStatus.Text = "Введите email для поиска!";
+                MessageBox.Show("Пользователь добавлен");
+                txtName.Clear();
+                txtEmail.Clear();
+                txtAge.Clear();
+            }
+            else
+            {
+                MessageBox.Show("Ошибка при добавлении пользователя");
+            }
+        }
+
+        // Обработчик для кнопки "Поиск"
+        private void SearchUser_Click(object sender, RoutedEventArgs e)
+        {
+            string email = txtSearchEmail.Text;
+
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                MessageBox.Show("Введите email для поиска");
                 return;
             }
 
-            dbHelper.FindUserByEmail(txtSearchEmail.Text);
-            txtSearchEmail.Text = "";
+            var user = dbHelper.FindUserByEmail(email);
+
+            if (user != null)
+            {
+                MessageBox.Show($"Найден пользователь: {user.Name}, {user.Email}, {user.Age} лет");
+            }
+            else
+            {
+                MessageBox.Show("Пользователь не найден");
+            }
+        }
+
+        // Обработчик для кнопки "Показать всех пользователей"
+        private void ShowUsers_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var users = dbHelper.GetAllUsers();
+                usersListBox.ItemsSource = users;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при загрузке пользователей: {ex.Message}");
+            }
         }
     }
 }
