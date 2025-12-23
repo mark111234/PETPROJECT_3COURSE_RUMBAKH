@@ -1,62 +1,64 @@
-﻿<Window x:Class="WpfApp1.MainWindow"
+﻿<Window x:Class="YourNamespace.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MySQL WPF App" Height="450" Width="800">
+        Title="Румбах проект" Height="450" Width="800">
+
     <Grid>
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="20">
+        <TabControl>
+            <!-- Вкладка Товары -->
+            <TabItem Header="Товары">
+                <Grid>
+                    <DataGrid x:Name="ProductsDataGrid" 
+                             AutoGenerateColumns="True"
+                             Margin="10"/>
+                </Grid>
+            </TabItem>
 
-                <!-- Тест подключения и создание БД -->
-                <GroupBox Header="Управление базой данных" Margin="0,0,0,10">
-                    <StackPanel Margin="5">
-                        <Button Content="Тест подключения" Click="TestConnection_Click" Margin="5"/>
-                        <Button Content="Создать БД" Click="CreateDB_Click" Margin="5"/>
-                    </StackPanel>
-                </GroupBox>
+            <!-- Вкладка Админ панель -->
+            <TabItem Header="Админ панель">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                <!-- Добавление пользователя -->
-                <GroupBox Header="Добавить пользователя" Margin="0,0,0,10">
-                    <StackPanel Margin="5">
-                        <TextBox x:Name="txtName" Margin="5" Text="" ToolTip="Имя"/>
-                        <TextBox x:Name="txtEmail" Margin="5" Text="" ToolTip="Email"/>
-                        <TextBox x:Name="txtAge" Margin="5" Text="" ToolTip="Возраст"/>
-                        <Button Content="Добавить пользователя" Click="AddUser_Click" Margin="5"/>
-                    </StackPanel>
-                </GroupBox>
+                    <!-- Название товара -->
+                    <TextBlock Text="Название товара:" 
+                              Grid.Row="0" Grid.Column="0" 
+                              Margin="0,0,10,10" VerticalAlignment="Center"/>
+                    <TextBox x:Name="ProductNameTextBox" 
+                            Grid.Row="0" Grid.Column="1" 
+                            Margin="0,0,0,10" Height="25"/>
 
-                <!-- Поиск пользователя -->
-                <GroupBox Header="Поиск пользователя" Margin="0,0,0,10">
-                    <StackPanel Margin="5">
-                        <TextBox x:Name="txtSearchEmail" Margin="5" Text="" ToolTip="Email для поиска"/>
-                        <Button Content="Поиск" Click="SearchUser_Click" Margin="5"/>
-                    </StackPanel>
-                </GroupBox>
+                    <!-- Количество товара -->
+                    <TextBlock Text="Количество товара:" 
+                              Grid.Row="1" Grid.Column="0" 
+                              Margin="0,0,10,10" VerticalAlignment="Center"/>
+                    <TextBox x:Name="ProductQuantityTextBox" 
+                            Grid.Row="1" Grid.Column="1" 
+                            Margin="0,0,0,10" Height="25"/>
 
-                <!-- Список пользователей -->
-                <GroupBox Header="Все пользователи">
-                    <StackPanel Margin="5">
-                        <Button Content="Показать всех пользователей" Click="ShowUsers_Click" Margin="5"/>
-                        <ListBox x:Name="usersListBox" Height="150" Margin="5">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Margin="5">
-                                        <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
-                                        <TextBlock Text="{Binding Email}"/>
-                                        <TextBlock>
-                                            <TextBlock.Text>
-                                                <MultiBinding StringFormat="Возраст: {0} лет">
-                                                    <Binding Path="Age"/>
-                                                </MultiBinding>
-                                            </TextBlock.Text>
-                                        </TextBlock>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </StackPanel>
-                </GroupBox>
+                    <!-- Кнопки управления -->
+                    <Button x:Name="AddProductButton" 
+                           Content="Добавить запись" 
+                           Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                           Margin="0,0,0,10" Height="30" 
+                           Click="AddProductButton_Click"/>
 
-            </StackPanel>
-        </ScrollViewer>
+                    <Button x:Name="ClearAllButton" 
+                           Content="Удалить все записи" 
+                           Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                           Margin="0,0,0,10" Height="30"
+                           Click="ClearAllButton_Click"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

@@ -1,137 +1,108 @@
 ﻿using MySql.Data.MySqlClient;
-using System.Collections.Generic;
-using System.Windows;
+using System;
+using System.Data;
 
-namespace WpfApp1
+public class DatabaseHelper
 {
-    public class DatabaseHelper
+    private string connectionString;
+
+    public DatabaseHelper()
     {
-        private string connectionString;
+        string server = "localhost";
+        string database = "markdb";
+        string username = "root";
+        string password = "1234";
 
-        public DatabaseHelper(string server, string database, string username, string password)
-        {
-            connectionString = $"Server={server};Database={database};Uid={username};Pwd={password};";
-        }
+        connectionString = $"Server={server};Database={database};Uid={username};Pwd={password};" +
+                         "AllowUserVariables=True;SslMode=Preferred;";
+    }
 
-        public string GetConnectionString()
-        {
-            return connectionString;
-        }
-
-        public void InitializeDatabase()
-        {
-            using (var connection = new MySqlConnection(connectionString))
-            {
-                connection.Open();
-
-                string createTableQuery = @"
-                    CREATE TABLE IF NOT EXISTS users (
-                        id INT AUTO_INCREMENT PRIMARY KEY,
-                        name VARCHAR(100) NOT NULL,
-                        email VARCHAR(100) NOT NULL UNIQUE,
-                        age INT NOT NULL
-                    )";
-
-                using (var command = new MySqlCommand(createTableQuery, connection))
-                {
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
-
-        public bool AddUser(string name, string email, int age)
-        {
-            try
-            {
-                using (var connection = new MySqlConnection(connectionString))
-                {
-                    connection.Open();
-
-                    string insertQuery = "INSERT INTO users (name, email, age) VALUES (@name, @email, @age)";
-
-                    using (var command = new MySqlCommand(insertQuery, connection))
-                    {
-                        command.Parameters.AddWithValue("@name", name);
-                        command.Parameters.AddWithValue("@email", email);
-                        command.Parameters.AddWithValue("@age", age);
-
-                        return command.ExecuteNonQuery() > 0;
-                    }
-                }
-            }
-            catch (MySqlException ex)
-            {
-                MessageBox.Show($"Ошибка при добавлении пользователя: {ex.Message}");
-                return false;
-            }
-        }
-
-        public List<User> GetAllUsers()
-        {
-            var users = new List<User>();
-
-            using (var connection = new MySqlConnection(connectionString))
-            {
-                connection.Open();
-
-                string selectQuery = "SELECT id, name, email, age FROM users";
-
-                using (var command = new MySqlCommand(selectQuery, connection))
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        users.Add(new User
-                        {
-                            Id = reader.GetInt32("id"),
-                            Name = reader.GetString("name"),
-                            Email = reader.GetString("email"),
-                            Age = reader.GetInt32("age")
-                        });
-                    }
-                }
-            }
-
-            return users;
-        }
-
-        public User FindUserByEmail(string email)
+    public bool TestConnection()
+    {
+        try
         {
             using (var connection = new MySqlConnection(connectionString))
             {
                 connection.Open();
-
-                string selectQuery = "SELECT id, name, email, age FROM users WHERE email = @email";
-
-                using (var command = new MySqlCommand(selectQuery, connection))
-                {
-                    command.Parameters.AddWithValue("@email", email);
-
-                    using (var reader = command.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            return new User
-                            {
-                                Id = reader.GetInt32("id"),
-                                Name = reader.GetString("name"),
-                                Email = reader.GetString("email"),
-                                Age = reader.GetInt32("age")
-                            };
-                        }
-                    }
-                }
+                return true;
             }
-
-            return null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка подключения: {ex.Message}");
+            return false;
         }
     }
 
-    public class User
+    public DataTable ExecuteQuery(string query)
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public int Age { get; set; }
+        DataTable dataTable = new DataTable();
+
+        try
+        {
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    using (var adapter = new MySqlDataAdapter(command))
+                    {
+                        adapter.Fill(dataTable);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка выполнения запроса: {ex.Message}");
+        }
+
+        return dataTable;
+    }
+
+    public int ExecuteNonQuery(string query)
+    {
+        int rowsAffected = 0;
+
+        try
+        {
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    rowsAffected = command.ExecuteNonQuery();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка выполнения команды: {ex.Message}");
+        }
+
+        return rowsAffected;
+    }
+
+    public object ExecuteScalar(string query)
+    {
+        object result = null;
+
+        try
+        {
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    result = command.ExecuteScalar();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка выполнения скалярного запроса: {ex.Message}");
+        }
+
+        return result;
     }
 }

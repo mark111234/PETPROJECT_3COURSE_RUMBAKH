@@ -7,12 +7,12 @@
       "RelativeMoniker": "D:0:0:{0A3495E3-A027-4EAF-B282-BD738EC27F84}|WpfApp1.csproj|solutionrelative:mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{0A3495E3-A027-4EAF-B282-BD738EC27F84}|WpfApp1.csproj|c:\\users\\marie\\source\\repos\\wpfapp1\\databasehelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0A3495E3-A027-4EAF-B282-BD738EC27F84}|WpfApp1.csproj|solutionrelative:databasehelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{0A3495E3-A027-4EAF-B282-BD738EC27F84}|WpfApp1.csproj|c:\\users\\marie\\source\\repos\\wpfapp1\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0A3495E3-A027-4EAF-B282-BD738EC27F84}|WpfApp1.csproj|solutionrelative:mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0A3495E3-A027-4EAF-B282-BD738EC27F84}|WpfApp1.csproj|c:\\users\\marie\\source\\repos\\wpfapp1\\databasehelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0A3495E3-A027-4EAF-B282-BD738EC27F84}|WpfApp1.csproj|solutionrelative:databasehelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{0A3495E3-A027-4EAF-B282-BD738EC27F84}|WpfApp1.csproj|c:\\users\\marie\\source\\repos\\wpfapp1\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -46,13 +46,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "MainWindow.xaml.cs",
               "DocumentMoniker": "C:\\Users\\Marie\\source\\repos\\WpfApp1\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "MainWindow.xaml.cs",
               "ToolTip": "C:\\Users\\Marie\\source\\repos\\WpfApp1\\MainWindow.xaml.cs",
               "RelativeToolTip": "MainWindow.xaml.cs",
-              "ViewState": "AgIAAFwAAAAAAAAAAAAQwH4AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAFkAAAAAAAAAAADwv4YAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-22T19:05:42.372Z",
               "EditorCaption": ""
@@ -83,13 +83,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Databasehelper.cs",
               "DocumentMoniker": "C:\\Users\\Marie\\source\\repos\\WpfApp1\\Databasehelper.cs",
               "RelativeDocumentMoniker": "Databasehelper.cs",
               "ToolTip": "C:\\Users\\Marie\\source\\repos\\WpfApp1\\Databasehelper.cs",
               "RelativeToolTip": "Databasehelper.cs",
-              "ViewState": "AgIAAGcAAAAAAAAAAAAQwIkAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-22T22:09:48.577Z",
               "EditorCaption": ""
