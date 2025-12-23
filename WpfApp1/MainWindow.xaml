@@ -1,11 +1,10 @@
 ﻿<Window x:Class="YourNamespace.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Румбах проект" Height="450" Width="800">
+        Title="Румбах проект" Height="500" Width="900">
 
     <Grid>
         <TabControl>
-            <!-- Вкладка Товары -->
             <TabItem Header="Товары">
                 <Grid>
                     <DataGrid x:Name="ProductsDataGrid" 
@@ -14,10 +13,12 @@
                 </Grid>
             </TabItem>
 
-            <!-- Вкладка Админ панель -->
             <TabItem Header="Админ панель">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -29,32 +30,48 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Название товара -->
-                    <TextBlock Text="Название товара:" 
+                    <TextBlock Text="ID записи:" 
                               Grid.Row="0" Grid.Column="0" 
                               Margin="0,0,10,10" VerticalAlignment="Center"/>
-                    <TextBox x:Name="ProductNameTextBox" 
+                    <TextBox x:Name="RecordIdTextBox" 
                             Grid.Row="0" Grid.Column="1" 
                             Margin="0,0,0,10" Height="25"/>
 
-                    <!-- Количество товара -->
-                    <TextBlock Text="Количество товара:" 
+                    <TextBlock Text="Название товара:" 
                               Grid.Row="1" Grid.Column="0" 
                               Margin="0,0,10,10" VerticalAlignment="Center"/>
-                    <TextBox x:Name="ProductQuantityTextBox" 
+                    <TextBox x:Name="ProductNameTextBox" 
                             Grid.Row="1" Grid.Column="1" 
                             Margin="0,0,0,10" Height="25"/>
 
-                    <!-- Кнопки управления -->
+                    <TextBlock Text="Количество товара:" 
+                              Grid.Row="2" Grid.Column="0" 
+                              Margin="0,0,10,10" VerticalAlignment="Center"/>
+                    <TextBox x:Name="ProductQuantityTextBox" 
+                            Grid.Row="2" Grid.Column="1" 
+                            Margin="0,0,0,10" Height="25"/>
+
                     <Button x:Name="AddProductButton" 
                            Content="Добавить запись" 
-                           Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                           Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
                            Margin="0,0,0,10" Height="30" 
                            Click="AddProductButton_Click"/>
 
+                    <Button x:Name="DeleteByIdButton" 
+                           Content="Удалить запись по ID" 
+                           Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
+                           Margin="0,0,0,10" Height="30"
+                           Click="DeleteByIdButton_Click"/>
+
+                    <Button x:Name="UpdateQuantityButton" 
+                           Content="Изменить количество товара" 
+                           Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
+                           Margin="0,0,0,10" Height="30"
+                           Click="UpdateQuantityButton_Click"/>
+
                     <Button x:Name="ClearAllButton" 
                            Content="Удалить все записи" 
-                           Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                           Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2"
                            Margin="0,0,0,10" Height="30"
                            Click="ClearAllButton_Click"/>
                 </Grid>

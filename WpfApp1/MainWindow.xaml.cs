@@ -14,7 +14,6 @@ namespace YourNamespace
             InitializeComponent();
             databaseHelper = new DatabaseHelper();
 
-            // Инициализация базы данных
             InitializeDatabase();
 
             // Загрузка данных при старте
@@ -39,7 +38,7 @@ namespace YourNamespace
         {
             try
             {
-                string query = "SELECT * FROM products ORDER BY name";
+                string query = "SELECT * FROM products ORDER BY id";
                 DataTable dataTable = databaseHelper.ExecuteQuery(query);
                 ProductsDataGrid.ItemsSource = dataTable.DefaultView;
             }
@@ -91,6 +90,113 @@ namespace YourNamespace
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка добавления товара: {ex.Message}");
+            }
+        }
+
+        private void DeleteByIdButton_Click(object sender, RoutedEventArgs e)
+        {
+            string idText = RecordIdTextBox.Text.Trim();
+
+            if (!int.TryParse(idText, out int id) || id <= 0)
+            {
+                MessageBox.Show("Введите корректный ID записи!");
+                return;
+            }
+
+            // Проверка существования записи
+            string checkQuery = $"SELECT COUNT(*) FROM products WHERE id = {id}";
+            int recordCount = Convert.ToInt32(databaseHelper.ExecuteScalar(checkQuery));
+
+            if (recordCount == 0)
+            {
+                MessageBox.Show($"Запись с ID {id} не найдена!");
+                return;
+            }
+
+            // Подтверждение удаления
+            MessageBoxResult result = MessageBox.Show(
+                $"Вы уверены, что хотите удалить запись с ID {id}?",
+                "Подтверждение удаления",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    string deleteQuery = $"DELETE FROM products WHERE id = {id}";
+                    int rowsAffected = databaseHelper.ExecuteNonQuery(deleteQuery);
+
+                    if (rowsAffected > 0)
+                    {
+                        MessageBox.Show($"Запись с ID {id} успешно удалена!");
+
+                        // Очистка поля ID
+                        RecordIdTextBox.Text = "";
+
+                        // Обновление таблицы
+                        LoadProductsData();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка удаления записи: {ex.Message}");
+                }
+            }
+        }
+
+        private void UpdateQuantityButton_Click(object sender, RoutedEventArgs e)
+        {
+            string idText = RecordIdTextBox.Text.Trim();
+            string quantityText = ProductQuantityTextBox.Text.Trim();
+
+            // Проверка введенных данных
+            if (!int.TryParse(idText, out int id) || id <= 0)
+            {
+                MessageBox.Show("Введите корректный ID записи!");
+                return;
+            }
+
+            if (!int.TryParse(quantityText, out int quantity) || quantity < 0)
+            {
+                MessageBox.Show("Введите корректное количество товара!");
+                return;
+            }
+
+            // Проверка существования записи
+            string checkQuery = $"SELECT COUNT(*) FROM products WHERE id = {id}";
+            int recordCount = Convert.ToInt32(databaseHelper.ExecuteScalar(checkQuery));
+
+            if (recordCount == 0)
+            {
+                MessageBox.Show($"Запись с ID {id} не найдена!");
+                return;
+            }
+
+            try
+            {
+                string updateQuery = $@"
+                    UPDATE products 
+                    SET quantity = {quantity} 
+                    WHERE id = {id}";
+
+                int rowsAffected = databaseHelper.ExecuteNonQuery(updateQuery);
+
+                if (rowsAffected > 0)
+                {
+                    MessageBox.Show($"Количество товара для записи ID {id} успешно обновлено!");
+
+                    // Очистка полей ввода
+                    RecordIdTextBox.Text = "";
+                    ProductQuantityTextBox.Text = "";
+
+                    // Обновление таблицы
+                    LoadProductsData();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка обновления количества: {ex.Message}");
             }
         }
 
