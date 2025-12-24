@@ -4,7 +4,8 @@
         Title="Румбах проект" Height="500" Width="900">
 
     <Grid>
-        <TabControl>
+        <TabControl x:Name="MainTabControl" SelectionChanged="TabControl_SelectionChanged">
+            <!-- Вкладка Товары -->
             <TabItem Header="Товары">
                 <Grid>
                     <DataGrid x:Name="ProductsDataGrid" 
@@ -13,8 +14,52 @@
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Админ панель">
-                <Grid Margin="10">
+            <!-- Вкладка Авторизация -->
+            <TabItem Header="Авторизация">
+                <Grid Margin="20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Заголовок -->
+                    <TextBlock Text="Движение товаров и товарооборот"
+                              Grid.Row="0"
+                              FontSize="16" FontWeight="Bold"
+                              HorizontalAlignment="Center"
+                              Margin="0,0,0,30"/>
+
+                    <!-- Поле для пароля -->
+                    <TextBlock Text="Пароль:" 
+                              Grid.Row="1"
+                              Margin="0,0,0,10" VerticalAlignment="Center"/>
+                    <PasswordBox x:Name="PasswordBox" 
+                                Grid.Row="2"
+                                Margin="0,0,0,20" Height="25" Width="200"
+                                HorizontalAlignment="Left"/>
+
+                    <!-- Кнопка авторизации -->
+                    <Button x:Name="LoginButton" 
+                           Content="Авторизоваться" 
+                           Grid.Row="3"
+                           Width="120" Height="30"
+                           HorizontalAlignment="Left"
+                           Click="LoginButton_Click"/>
+
+                    <!-- Статус авторизации -->
+                    <TextBlock x:Name="AuthStatusText" 
+                              Grid.Row="4"
+                              Margin="0,20,0,0"
+                              Foreground="Gray"/>
+                </Grid>
+            </TabItem>
+
+            <!-- Вкладка Админ панель -->
+            <TabItem Header="Админ панель" x:Name="AdminTabItem">
+                <Grid Margin="10" IsEnabled="{Binding IsAdminAuthenticated}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -30,6 +75,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
+                    <!-- ID -->
                     <TextBlock Text="ID записи:" 
                               Grid.Row="0" Grid.Column="0" 
                               Margin="0,0,10,10" VerticalAlignment="Center"/>
@@ -37,6 +83,7 @@
                             Grid.Row="0" Grid.Column="1" 
                             Margin="0,0,0,10" Height="25"/>
 
+                    <!-- Название товара -->
                     <TextBlock Text="Название товара:" 
                               Grid.Row="1" Grid.Column="0" 
                               Margin="0,0,10,10" VerticalAlignment="Center"/>
@@ -44,6 +91,7 @@
                             Grid.Row="1" Grid.Column="1" 
                             Margin="0,0,0,10" Height="25"/>
 
+                    <!-- Количество товара -->
                     <TextBlock Text="Количество товара:" 
                               Grid.Row="2" Grid.Column="0" 
                               Margin="0,0,10,10" VerticalAlignment="Center"/>
@@ -51,6 +99,7 @@
                             Grid.Row="2" Grid.Column="1" 
                             Margin="0,0,0,10" Height="25"/>
 
+                    <!-- Кнопки -->
                     <Button x:Name="AddProductButton" 
                            Content="Добавить запись" 
                            Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
@@ -74,6 +123,18 @@
                            Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2"
                            Margin="0,0,0,10" Height="30"
                            Click="ClearAllButton_Click"/>
+
+                    <!-- Сообщение о необходимости авторизации -->
+                    <Border Grid.Row="0" Grid.RowSpan="8" Grid.Column="0" Grid.ColumnSpan="2"
+                           Background="#CCFFFFFF" Visibility="{Binding AdminPanelLockVisibility}">
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="Требуется авторизация" 
+                                      FontSize="16" FontWeight="Bold"
+                                      Margin="0,0,0,10"/>
+                            <TextBlock Text="Перейдите во вкладку 'Авторизация' и введите пароль"
+                                      TextAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
                 </Grid>
             </TabItem>
         </TabControl>

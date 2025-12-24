@@ -2,22 +2,53 @@
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
+using System.ComponentModel;
 
 namespace YourNamespace
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private DatabaseHelper databaseHelper;
+        private bool isAdminAuthenticated = false;
+
+        public bool IsAdminAuthenticated
+        {
+            get { return isAdminAuthenticated; }
+            set
+            {
+                isAdminAuthenticated = value;
+                OnPropertyChanged(nameof(IsAdminAuthenticated));
+                OnPropertyChanged(nameof(AdminPanelLockVisibility));
+            }
+        }
+
+        public Visibility AdminPanelLockVisibility
+        {
+            get { return IsAdminAuthenticated ? Visibility.Collapsed : Visibility.Visible; }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public MainWindow()
         {
             InitializeComponent();
             databaseHelper = new DatabaseHelper();
 
+            this.DataContext = this;
+
+            // Инициализация базы данных
             InitializeDatabase();
 
             // Загрузка данных при старте
             LoadProductsData();
+
+            // Блокировка админ панели по умолчанию
+            IsAdminAuthenticated = false;
+        }
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         private void InitializeDatabase()
@@ -48,12 +79,40 @@ namespace YourNamespace
             }
         }
 
+        private void LoginButton_Click(object sender, RoutedEventArgs e)
+        {
+            string password = PasswordBox.Password;
+
+            if (password == "1234")
+            {
+                IsAdminAuthenticated = true;
+                AuthStatusText.Text = "Авторизация успешна!";
+                AuthStatusText.Foreground = System.Windows.Media.Brushes.Green;
+
+                // Переход на админ панель после успешной авторизации
+                MainTabControl.SelectedItem = AdminTabItem;
+            }
+            else
+            {
+                IsAdminAuthenticated = false;
+                AuthStatusText.Text = "Неверный пароль!";
+                AuthStatusText.Foreground = System.Windows.Media.Brushes.Red;
+                PasswordBox.Password = "";
+            }
+        }
+
         private void AddProductButton_Click(object sender, RoutedEventArgs e)
         {
+            if (!IsAdminAuthenticated)
+            {
+                MessageBox.Show("Требуется авторизация!");
+                MainTabControl.SelectedItem = AdminTabItem;
+                return;
+            }
+
             string name = ProductNameTextBox.Text.Trim();
             string quantityText = ProductQuantityTextBox.Text.Trim();
 
-            // Проверка введенных данных
             if (string.IsNullOrEmpty(name))
             {
                 MessageBox.Show("Введите название товара!");
@@ -79,11 +138,9 @@ namespace YourNamespace
                 {
                     MessageBox.Show("Товар успешно добавлен!");
 
-                    // Очистка полей ввода
                     ProductNameTextBox.Text = "";
                     ProductQuantityTextBox.Text = "";
 
-                    // Обновление таблицы
                     LoadProductsData();
                 }
             }
@@ -95,6 +152,13 @@ namespace YourNamespace
 
         private void DeleteByIdButton_Click(object sender, RoutedEventArgs e)
         {
+            if (!IsAdminAuthenticated)
+            {
+                MessageBox.Show("Требуется авторизация!");
+                MainTabControl.SelectedItem = AdminTabItem;
+                return;
+            }
+
             string idText = RecordIdTextBox.Text.Trim();
 
             if (!int.TryParse(idText, out int id) || id <= 0)
@@ -113,7 +177,6 @@ namespace YourNamespace
                 return;
             }
 
-            // Подтверждение удаления
             MessageBoxResult result = MessageBox.Show(
                 $"Вы уверены, что хотите удалить запись с ID {id}?",
                 "Подтверждение удаления",
@@ -131,10 +194,8 @@ namespace YourNamespace
                     {
                         MessageBox.Show($"Запись с ID {id} успешно удалена!");
 
-                        // Очистка поля ID
                         RecordIdTextBox.Text = "";
 
-                        // Обновление таблицы
                         LoadProductsData();
                     }
                 }
@@ -147,10 +208,16 @@ namespace YourNamespace
 
         private void UpdateQuantityButton_Click(object sender, RoutedEventArgs e)
         {
+            if (!IsAdminAuthenticated)
+            {
+                MessageBox.Show("Требуется авторизация!");
+                MainTabControl.SelectedItem = AdminTabItem;
+                return;
+            }
+
             string idText = RecordIdTextBox.Text.Trim();
             string quantityText = ProductQuantityTextBox.Text.Trim();
 
-            // Проверка введенных данных
             if (!int.TryParse(idText, out int id) || id <= 0)
             {
                 MessageBox.Show("Введите корректный ID записи!");
@@ -186,11 +253,9 @@ namespace YourNamespace
                 {
                     MessageBox.Show($"Количество товара для записи ID {id} успешно обновлено!");
 
-                    // Очистка полей ввода
                     RecordIdTextBox.Text = "";
                     ProductQuantityTextBox.Text = "";
 
-                    // Обновление таблицы
                     LoadProductsData();
                 }
             }
@@ -202,7 +267,13 @@ namespace YourNamespace
 
         private void ClearAllButton_Click(object sender, RoutedEventArgs e)
         {
-            // Подтверждение удаления
+            if (!IsAdminAuthenticated)
+            {
+                MessageBox.Show("Требуется авторизация!");
+                MainTabControl.SelectedItem = AdminTabItem;
+                return;
+            }
+
             MessageBoxResult result = MessageBox.Show(
                 "Вы уверены, что хотите удалить ВСЕ записи? Это действие нельзя отменить!",
                 "Подтверждение удаления",
@@ -218,7 +289,6 @@ namespace YourNamespace
 
                     MessageBox.Show($"Удалено записей: {rowsAffected}");
 
-                    // Обновление таблицы
                     LoadProductsData();
                 }
                 catch (Exception ex)
@@ -228,7 +298,6 @@ namespace YourNamespace
             }
         }
 
-        // Автоматическое обновление данных при переключении на вкладку товаров
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.Source is TabControl)
