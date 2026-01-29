@@ -1,8 +1,9 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
+using System.ComponentModel;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
-using System.ComponentModel;
 
 namespace YourNamespace
 {
@@ -305,5 +306,138 @@ namespace YourNamespace
                 LoadProductsData();
             }
         }
+
+        private void BulkInsertButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!IsAdminAuthenticated)
+            {
+                MessageBox.Show("Требуется авторизация!");
+                MainTabControl.SelectedItem = AdminTabItem;
+                return;
+            }
+
+            // Собираем данные из всех полей
+            var productsToAdd = new List<(string name, int quantity)>();
+
+            // Получаем ссылки на все текстовые поля
+            TextBox[] nameBoxes = {
+                BulkProductName1, BulkProductName2, BulkProductName3, BulkProductName4, BulkProductName5,
+                BulkProductName6, BulkProductName7, BulkProductName8, BulkProductName9, BulkProductName10
+            };
+
+            TextBox[] quantityBoxes = {
+                BulkProductQuantity1, BulkProductQuantity2, BulkProductQuantity3, BulkProductQuantity4, BulkProductQuantity5,
+                BulkProductQuantity6, BulkProductQuantity7, BulkProductQuantity8, BulkProductQuantity9, BulkProductQuantity10
+            };
+
+            // Проверяем и собираем данные
+            int validRecords = 0;
+            int totalRecords = 0;
+
+            for (int i = 0; i < nameBoxes.Length; i++)
+            {
+                string name = nameBoxes[i].Text.Trim();
+                string quantityText = quantityBoxes[i].Text.Trim();
+
+                // Пропускаем пустые названия
+                if (string.IsNullOrEmpty(name))
+                    continue;
+
+                totalRecords++;
+
+                if (!int.TryParse(quantityText, out int quantity) || quantity < 0)
+                {
+                    MessageBox.Show($"Некорректное количество в строке {i + 1}! Используется значение 0.");
+                    quantity = 0;
+                }
+
+                productsToAdd.Add((name, quantity));
+                validRecords++;
+            }
+
+            if (validRecords == 0)
+            {
+                MessageBox.Show("Нет данных для добавления! Заполните хотя бы одно поле с названием товара.");
+                return;
+            }
+
+            MessageBoxResult result = MessageBox.Show(
+                $"Вы уверены, что хотите добавить {validRecords} записей из {totalRecords} заполненных?",
+                "Подтверждение массового добавления",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    int successfullyAdded = 0;
+
+                    // Используем транзакцию для более быстрого добавления
+                    using (var connection = new MySqlConnection(databaseHelper.GetConnectionString()))
+                    {
+                        connection.Open();
+                        using (var transaction = connection.BeginTransaction())
+                        {
+                            try
+                            {
+                                foreach (var product in productsToAdd)
+                                {
+                                    string insertQuery = $@"
+                                        INSERT INTO products (name, quantity) 
+                                        VALUES ('{product.name.Replace("'", "''")}', {product.quantity})";
+
+                                    using (var command = new MySqlCommand(insertQuery, connection, transaction))
+                                    {
+                                        if (command.ExecuteNonQuery() > 0)
+                                        {
+                                            successfullyAdded++;
+                                        }
+                                    }
+                                }
+
+                                transaction.Commit();
+                            }
+                            catch
+                            {
+                                transaction.Rollback();
+                                throw;
+                            }
+                        }
+                    }
+
+                    // Очищаем поля после успешного добавления
+                    if (successfullyAdded > 0)
+                    {
+                        foreach (var box in nameBoxes)
+                        {
+                            box.Text = "";
+                        }
+                        foreach (var box in quantityBoxes)
+                        {
+                            box.Text = "0";
+                        }
+
+                        BulkInsertStatus.Text = $"Успешно добавлено записей: {successfullyAdded}";
+                        BulkInsertStatus.Foreground = System.Windows.Media.Brushes.Green;
+
+                        // Обновляем данные в таблице
+                        LoadProductsData();
+                    }
+                    else
+                    {
+                        BulkInsertStatus.Text = "Не удалось добавить ни одной записи";
+                        BulkInsertStatus.Foreground = System.Windows.Media.Brushes.Red;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка массового добавления: {ex.Message}");
+                    BulkInsertStatus.Text = $"Ошибка: {ex.Message}";
+                    BulkInsertStatus.Foreground = System.Windows.Media.Brushes.Red;
+                }
+            }
+        }
+
     }
 }

@@ -16,6 +16,10 @@ public class DatabaseHelper
         connectionString = $"Server={server};Database={database};Uid={username};Pwd={password};" +
                          "AllowUserVariables=True;SslMode=Preferred;";
     }
+    public string GetConnectionString()
+    {
+        return connectionString;
+    }
 
     public bool TestConnection()
     {
